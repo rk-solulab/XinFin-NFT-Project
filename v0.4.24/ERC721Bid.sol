@@ -148,7 +148,6 @@ contract ERC721Bid is ERC721BidStorage {
     * @param _data Additional data with no specified format
     * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     */
-    //Refund kr dena baki sare bidders ko
     function onERC721Received(
         address _from,
         address /*_to*/,
