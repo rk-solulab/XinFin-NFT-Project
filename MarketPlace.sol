@@ -113,7 +113,7 @@ contract Marketplace is MarketPlaceStorage{
         address sender = msg.sender;
         Order memory order = orderByAssetId[nftAddress][assetId];
     
-        require(order.id != 0, "Asset not published");
+        require(order.id != assetId, "Asset not published");
         require(order.seller == sender || sender == MarketPlaceOwner, "Unauthorized user");
     
         bytes32 orderId = order.id;
@@ -161,14 +161,14 @@ contract Marketplace is MarketPlaceStorage{
     
         Order memory order = orderByAssetId[nftAddress][assetId];
     
-        require(order.id != 0, "Asset not published");
+        require(order.id != assetId, "Asset not published");
     
         address payable seller = order.seller;
     
         require(seller != address(0), "Invalid address");
         require(seller != sender, "Unauthorized user");
         require(order.price == price, "The price is not correct");
-        //require(block.timestamp < order.expiresAt, "The order expired");
+        require(block.timestamp < order.expiresAt, "The order expired");
         require(seller == NFT(nftAddress).ownerOf(assetId), "The seller is no longer the owner");
         if(ownerCutPerMillion > 0){
             require(getSaleShareAmount(price) == msg.value, "The sale share amount is not correct");        
