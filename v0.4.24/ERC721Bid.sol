@@ -1,5 +1,6 @@
 pragma solidity ^0.4.24;
 
+
 import "./NFT.sol";
 
 import "./SafeMath.sol";
@@ -11,12 +12,12 @@ import "./ERC721BidStorage.sol";
 contract ERC721Bid is ERC721BidStorage {
     using SafeMath for uint256;
     using AddressUtils for address;
-    address payable BiddingOwner;
+    address BiddingOwner;
     /**
     * @dev Constructor of the contract.
     * @param _owner - address of the owner for the contract
     */
-    constructor(address payable _owner, uint256 _ownerCutPerMillion) public{
+    constructor(address _owner, uint256 _ownerCutPerMillion) public{
 
          // Fee init
         setOwnerCutPerMillion(_ownerCutPerMillion);
@@ -149,7 +150,7 @@ contract ERC721Bid is ERC721BidStorage {
     */
     //Refund kr dena baki sare bidders ko
     function onERC721Received(
-        address payable _from,
+        address _from,
         address /*_to*/,
         uint256 _tokenId,
         bytes memory _data
