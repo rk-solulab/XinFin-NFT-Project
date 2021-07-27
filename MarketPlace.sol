@@ -113,7 +113,7 @@ contract Marketplace is MarketPlaceStorage{
         address sender = msg.sender;
         Order memory order = orderByAssetId[nftAddress][assetId];
     
-        require(order.id != assetId, "Asset not published");
+        require(order.id != 0, "Asset not published");
         require(order.seller == sender || sender == MarketPlaceOwner, "Unauthorized user");
     
         bytes32 orderId = order.id;
@@ -161,7 +161,7 @@ contract Marketplace is MarketPlaceStorage{
     
         Order memory order = orderByAssetId[nftAddress][assetId];
     
-        require(order.id != assetId, "Asset not published");
+        require(order.id != 0, "Asset not published");
     
         address payable seller = order.seller;
     
