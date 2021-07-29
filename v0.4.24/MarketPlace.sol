@@ -12,7 +12,7 @@ contract Marketplace is MarketPlaceStorage{
     using AddressUtils for address;
     address MarketPlaceOwner;
     
-    constructor ( address _owner ) public {
+    constructor ( address _owner) public {
         MarketPlaceOwner = _owner;
     }
     
@@ -28,7 +28,7 @@ contract Marketplace is MarketPlaceStorage{
     * @dev Sets the publication fee that's charged to users to publish items
     * @param _publicationFee - Fee amount in wei this contract charges to publish an item
     */
-    function setPublicationFee(uint256 _publicationFee) public payable isOwner {
+    function setPublicationFee(uint256 _publicationFee) external isOwner {
         publicationFeeInWei = _publicationFee;
         emit ChangedPublicationFee(publicationFeeInWei);
     }   
@@ -38,7 +38,7 @@ contract Marketplace is MarketPlaceStorage{
     *  charged to the seller on a successful sale
     * @param _ownerCutPerMillion - Share amount, from 0 to 999,999
     */
-    function setOwnerCutPerMillion(uint256 _ownerCutPerMillion) public payable isOwner {
+    function setOwnerCutPerMillion(uint256 _ownerCutPerMillion) external isOwner {
         require(_ownerCutPerMillion < 1000000, "The owner cut should be between 0 and 999,999");
 
         ownerCutPerMillion = _ownerCutPerMillion;
@@ -69,6 +69,10 @@ contract Marketplace is MarketPlaceStorage{
 
         require(sender == assetOwner, "Only the owner can create orders");
         require(priceInWei > 0, "Price should be bigger than 0");
+        require(
+          NFT(nftAddress).getApproved(assetId) == address(this) || NFT(nftAddress).isApprovedForAll(assetOwner, address(this)),
+          "The contract is not authorized to manage the asset"
+        );
         require(expiresAt > block.timestamp.add(1 minutes), "Publication should be more than 1 minute in the future");
 
         bytes32 orderId = keccak256(
@@ -156,6 +160,8 @@ contract Marketplace is MarketPlaceStorage{
     )
        public payable
       {
+          
+        require(nftAddress.isContract(), "The NFT Address should be a contract");  
     
         address sender = msg.sender;
     
@@ -168,7 +174,7 @@ contract Marketplace is MarketPlaceStorage{
         require(seller != address(0), "Invalid address");
         require(seller != sender, "Unauthorized user");
         require(order.price == price, "The price is not correct");
-        //require(block.timestamp < order.expiresAt, "The order expired");
+        require(block.timestamp < order.expiresAt, "The order expired");
         require(seller == NFT(nftAddress).ownerOf(assetId), "The seller is no longer the owner");
         if(ownerCutPerMillion > 0){
             require(getSaleShareAmount(price) == msg.value, "The sale share amount is not correct");        
@@ -181,15 +187,12 @@ contract Marketplace is MarketPlaceStorage{
         // Transfer sale amount to seller
         seller.transfer(price.sub(msg.value));
     
-        /*
-        //approve buyer only seller can approve buyer
-        NFT(nftAddress).approve(sender, assetId);
         //Transfer asset owner
         NFT(nftAddress).safeTransferFrom(
           seller,
           sender,
           assetId
-        );*/
+        );
         
     
         emit OrderSuccessful(

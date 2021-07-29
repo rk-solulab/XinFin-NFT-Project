@@ -1,5 +1,8 @@
 pragma solidity ^0.4.24;
 
+/**
+ * @title Interface for contracts conforming to ERC-721
+ */
 
 contract MarketPlaceStorage {
 
