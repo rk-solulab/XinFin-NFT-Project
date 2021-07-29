@@ -46,7 +46,7 @@ contract ERC721Bid is ERC721BidStorage {
     * @param _price - uint256 of the price for the bid
     * @param _duration - uint256 of the duration in seconds for the bid
     */
-    function _placeBid(
+    function placeBid(
         address _tokenAddress,
         uint256 _tokenId,
         uint256 _price,
@@ -148,6 +148,7 @@ contract ERC721Bid is ERC721BidStorage {
     * @param _data Additional data with no specified format
     * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     */
+
     function onERC721Received(
         address _from,
         address /*_to*/,
@@ -181,8 +182,6 @@ contract ERC721Bid is ERC721BidStorage {
         delete bidCounterByToken[msg.sender][_tokenId];
 
         // Transfer token to bidder
-        //ERC721Interface(msg.sender).transferFrom(address(this), bidder, _tokenId);
-        
         NFT(msg.sender).safeTransferFrom(
           address(this),
           bidder,
@@ -261,16 +260,17 @@ contract ERC721Bid is ERC721BidStorage {
     * @param _tokenId - uint256 of the token id
     */
     function cancelBid(address _tokenAddress, uint256 _tokenId) public {
+        
+        require(_tokenAddress.isContract(), "The Token Address should be a contract");
         address sender = msg.sender;
         // Get active bid
-        (uint256 bidIndex, bytes32 bidId,,uint256 price,) = getBidByBidder(
+        (uint256 bidIndex, bytes32 bidId,address bidder,uint256 price,) = getBidByBidder(
             _tokenAddress,
             _tokenId,
             sender
         );
         
-        //withdraw the bid amount
-        msg.sender.transfer(price);
+        require(bidder == msg.sender, "Only the bid owner can cancel the bid");
         
         _cancelBid(
             bidIndex,
@@ -279,6 +279,9 @@ contract ERC721Bid is ERC721BidStorage {
             _tokenId,
             sender
         );
+        
+        //withdraw the bid amount
+        sender.transfer(price);
     }
 
     /**

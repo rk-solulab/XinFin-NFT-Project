@@ -12,8 +12,13 @@ contract Marketplace is MarketPlaceStorage{
     using AddressUtils for address;
     address MarketPlaceOwner;
     
-    constructor ( address _owner) public {
+    constructor ( address _owner, uint256 _ownerCutPerMillion) public {
+        
         MarketPlaceOwner = _owner;
+        
+        // Fee init
+        setOwnerCutPerMillion(_ownerCutPerMillion);
+    
     }
     
     /**
@@ -38,7 +43,7 @@ contract Marketplace is MarketPlaceStorage{
     *  charged to the seller on a successful sale
     * @param _ownerCutPerMillion - Share amount, from 0 to 999,999
     */
-    function setOwnerCutPerMillion(uint256 _ownerCutPerMillion) external isOwner {
+    function setOwnerCutPerMillion(uint256 _ownerCutPerMillion) public isOwner {
         require(_ownerCutPerMillion < 1000000, "The owner cut should be between 0 and 999,999");
 
         ownerCutPerMillion = _ownerCutPerMillion;
