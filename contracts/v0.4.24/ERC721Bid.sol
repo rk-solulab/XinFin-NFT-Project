@@ -18,12 +18,11 @@ contract ERC721Bid is ERC721BidStorage {
     * @param _owner - address of the owner for the contract
     */
     constructor(address _owner, uint256 _ownerCutPerMillion) public{
-
-         // Fee init
-        setOwnerCutPerMillion(_ownerCutPerMillion);
-
-        // Set owner
+	// Set owner
         BiddingOwner = _owner;
+        
+	// Fee init
+        setOwnerCutPerMillion(_ownerCutPerMillion);
     }
     
    /**
@@ -146,7 +145,6 @@ contract ERC721Bid is ERC721BidStorage {
     * @param _from The address which previously owned the token
     * @param _tokenId The NFT identifier which is being transferred
     * @param _data Additional data with no specified format
-    * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
     */
 
     function onERC721Received(

@@ -181,15 +181,12 @@ contract Marketplace is MarketPlaceStorage{
         // Transfer sale amount to seller
         seller.transfer(price.sub(msg.value));
     
-        /*
-        //approve buyer only seller can approve buyer
-        NFT(nftAddress).approve(sender, assetId);
         //Transfer asset owner
         NFT(nftAddress).safeTransferFrom(
           seller,
           sender,
           assetId
-        );*/
+        );
         
     
         emit OrderSuccessful(
